@@ -95,124 +95,132 @@ export function MascotaFormDialog({ open, onOpenChange }: MascotaFormDialogProps
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[90svh] overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Nueva Mascota</DialogTitle>
           <DialogDescription>
             Registra una mascota para el servicio de estetica
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="nombreMascota">
-              Nombre de la Mascota *
-            </Label>
-            <Input
-              id="nombreMascota"
-              placeholder="Ej: Firulais"
-              value={nombreMascota}
-              onChange={(e) => setNombreMascota(e.target.value)}
-              autoFocus
-              className="h-11 text-base"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="nombreDueno">
-              Nombre del Dueno *
-            </Label>
-            <Input
-              id="nombreDueno"
-              placeholder="Ej: Juan Perez"
-              value={nombreDueno}
-              onChange={(e) => setNombreDueno(e.target.value)}
-              className="h-11 text-base"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="telefono">
-              Telefono (opcional)
-            </Label>
-            <Input
-              id="telefono"
-              placeholder="Ej: 55 1234 5678"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-              className="h-11 text-base"
-            />
-          </div>
-
-          {/* Service type selector */}
-          <div className="flex flex-col gap-2">
-            <Label>Servicio *</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {SERVICIOS.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setServicio(s)}
-                  className={`rounded-lg border-2 p-3 text-sm font-medium transition-colors ${
-                    servicio === s
-                      ? "border-teal-500 bg-teal-50 text-teal-700"
-                      : "border-muted bg-background text-muted-foreground hover:border-muted-foreground/30"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+        <div className="flex-1 overflow-y-auto pr-1">
+          <form id="mascota-form" onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="nombreMascota" className="text-sm">
+                Nombre de la Mascota *
+              </Label>
+              <Input
+                id="nombreMascota"
+                placeholder="Ej: Firulais"
+                value={nombreMascota}
+                onChange={(e) => setNombreMascota(e.target.value)}
+                autoFocus
+                className="h-10"
+              />
             </div>
-            <Input
-              placeholder="O escribe otro servicio..."
-              value={SERVICIOS.includes(servicio) ? "" : servicio}
-              onChange={(e) => setServicio(e.target.value)}
-              className="h-11 text-base mt-2"
-            />
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="realizadoPor">
-              Realizado por (opcional)
-            </Label>
-            <Input
-              id="realizadoPor"
-              placeholder="Nombre del estilista"
-              value={realizadoPor}
-              onChange={(e) => setRealizadoPor(e.target.value)}
-              className="h-11 text-base"
-            />
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="nombreDueno" className="text-sm">
+                Nombre del Dueno *
+              </Label>
+              <Input
+                id="nombreDueno"
+                placeholder="Ej: Juan Perez"
+                value={nombreDueno}
+                onChange={(e) => setNombreDueno(e.target.value)}
+                className="h-10"
+              />
+            </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="notas">Notas (opcional)</Label>
-            <Input
-              id="notas"
-              placeholder="Detalles adicionales"
-              value={notas}
-              onChange={(e) => setNotas(e.target.value)}
-              className="h-11 text-base"
-            />
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="telefono" className="text-sm">
+                Telefono (opcional)
+              </Label>
+              <Input
+                id="telefono"
+                placeholder="Ej: 55 1234 5678"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                className="h-10"
+              />
+            </div>
 
-          {error && (
-            <p className="text-sm text-red-600 font-medium">{error}</p>
-          )}
+            {/* Service type selector */}
+            <div className="flex flex-col gap-1.5">
+              <Label className="text-sm">Servicio *</Label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {SERVICIOS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setServicio(s)}
+                    className={`rounded-lg border-2 p-2 text-xs font-medium transition-colors ${
+                      servicio === s
+                        ? "border-teal-500 bg-teal-50 text-teal-700"
+                        : "border-muted bg-background text-muted-foreground hover:border-muted-foreground/30"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <Input
+                placeholder="O escribe otro servicio..."
+                value={SERVICIOS.includes(servicio) ? "" : servicio}
+                onChange={(e) => setServicio(e.target.value)}
+                className="h-10 mt-1"
+              />
+            </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              className="h-11"
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" className="h-11 gap-2 bg-teal-600 hover:bg-teal-700" disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-              {isSubmitting ? "Registrando..." : "Registrar Mascota"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="realizadoPor" className="text-sm">
+                  Realizado por
+                </Label>
+                <Input
+                  id="realizadoPor"
+                  placeholder="Estilista"
+                  value={realizadoPor}
+                  onChange={(e) => setRealizadoPor(e.target.value)}
+                  className="h-10"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="notas" className="text-sm">Notas</Label>
+                <Input
+                  id="notas"
+                  placeholder="Opcional"
+                  value={notas}
+                  onChange={(e) => setNotas(e.target.value)}
+                  className="h-10"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-sm text-red-600 font-medium">{error}</p>
+            )}
+          </form>
+        </div>
+        <DialogFooter className="flex-shrink-0 border-t pt-4 mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            className="h-10"
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type="submit" 
+            form="mascota-form"
+            className="h-10 gap-2 bg-teal-600 hover:bg-teal-700" 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+            {isSubmitting ? "Registrando..." : "Registrar Mascota"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
