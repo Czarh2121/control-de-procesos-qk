@@ -17,8 +17,11 @@ CREATE TABLE IF NOT EXISTS mascotas (
 CREATE INDEX IF NOT EXISTS idx_mascotas_estado ON mascotas(estado);
 CREATE INDEX IF NOT EXISTS idx_mascotas_creado_en ON mascotas(creado_en DESC);
 
--- Habilitar RLS (Row Level Security) - opcional para seguridad
--- ALTER TABLE mascotas ENABLE ROW LEVEL SECURITY;
+-- Habilitar RLS (Row Level Security)
+ALTER TABLE mascotas ENABLE ROW LEVEL SECURITY;
 
--- Politica para permitir todas las operaciones (ajustar segun necesidades)
--- CREATE POLICY "Allow all operations" ON mascotas FOR ALL USING (true) WITH CHECK (true);
+-- Politica para permitir todas las operaciones (app interna sin autenticacion)
+CREATE POLICY "Allow public read" ON mascotas FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON mascotas FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update" ON mascotas FOR UPDATE USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public delete" ON mascotas FOR DELETE USING (true);
