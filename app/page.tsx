@@ -1,90 +1,42 @@
 import Link from "next/link"
-import Image from "next/image"
-import { Printer, Layers, Search, BarChart3 } from "lucide-react"
+import { Scissors, Search, Dog } from "lucide-react"
 
 export default function HomePage() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center bg-background px-4">
       <div className="flex w-full max-w-lg flex-col items-center gap-8">
-        {/* Logos */}
-        <div className="flex items-center justify-center gap-6">
-          <Image
-            src="/images/logo-sh.png"
-            alt="SH Artes Graficas"
-            width={100}
-            height={100}
-            className="object-contain"
-            priority
-          />
-          <Image
-            src="/images/logo-myapp.png"
-            alt="MyApp"
-            width={90}
-            height={90}
-            className="object-contain"
-            priority
-          />
+        {/* Logo / Icon */}
+        <div className="flex items-center justify-center">
+          <div className="flex size-24 items-center justify-center rounded-full bg-teal-100">
+            <Dog className="size-12 text-teal-600" />
+          </div>
         </div>
 
         {/* Header */}
         <div className="flex flex-col items-center gap-2 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-foreground text-balance">
-            Control de Procesos
+            Veterinaria Estetica
           </h1>
           <p className="text-muted-foreground text-base">
-            Selecciona tu estacion de trabajo
+            Sistema de control para el servicio de estetica canina
           </p>
         </div>
 
         {/* Station buttons */}
         <div className="flex w-full flex-col gap-4">
           <Link
-            href="/impresion"
-            className="group flex items-center gap-4 rounded-xl border-2 border-amber-300 bg-amber-50 p-6 transition-all hover:border-amber-500 hover:bg-amber-100 hover:shadow-lg active:scale-[0.98]"
+            href="/estetica"
+            className="group flex items-center gap-4 rounded-xl border-2 border-teal-300 bg-teal-50 p-6 transition-all hover:border-teal-500 hover:bg-teal-100 hover:shadow-lg active:scale-[0.98]"
           >
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-amber-500">
-              <Printer className="size-7 text-white" />
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-teal-500">
+              <Scissors className="size-7 text-white" />
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xl font-bold text-foreground">
-                Local de Impresion / Creacion de Tickets
+                Estacion de Estetica
               </span>
               <span className="text-sm text-muted-foreground">
-                Crear tickets y gestionar impresiones
-              </span>
-            </div>
-          </Link>
-
-          <Link
-            href="/laminado"
-            className="group flex items-center gap-4 rounded-xl border-2 border-violet-300 bg-violet-50 p-6 transition-all hover:border-violet-500 hover:bg-violet-100 hover:shadow-lg active:scale-[0.98]"
-          >
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-violet-500">
-              <Layers className="size-7 text-white" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xl font-bold text-foreground">
-                Local de Laminado
-              </span>
-              <span className="text-sm text-muted-foreground">
-                Recibir trabajos y gestionar laminado
-              </span>
-            </div>
-          </Link>
-
-          <Link
-            href="/reportes"
-            className="group flex items-center gap-4 rounded-xl border-2 border-blue-300 bg-blue-50 p-6 transition-all hover:border-blue-500 hover:bg-blue-100 hover:shadow-lg active:scale-[0.98]"
-          >
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-blue-500">
-              <BarChart3 className="size-7 text-white" />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-xl font-bold text-foreground">
-                Reportes
-              </span>
-              <span className="text-sm text-muted-foreground">
-                Ver el rendimiento y cumplimiento de tickets
+                Registrar mascotas y marcar cuando estan listas
               </span>
             </div>
           </Link>
@@ -107,16 +59,16 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xl font-bold text-foreground">
-              Consultar Pedido
+              Consultar Mascota
             </span>
             <span className="text-sm text-muted-foreground">
-              Busca tu ticket y revisa si tu trabajo esta listo
+              Revisa si tu mascota ya esta lista para recoger
             </span>
           </div>
         </Link>
 
         <p className="text-xs text-muted-foreground text-center">
-          Cada local debe abrir su propia URL en su dispositivo
+          Tu mascota lucira increible
         </p>
       </div>
     </main>

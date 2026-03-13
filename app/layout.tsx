@@ -8,8 +8,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Control de Procesos - Impresion y Laminado',
-  description: 'Sistema de seguimiento de tickets entre locales de impresion y laminado',
+  title: 'Veterinaria Estetica - Control de Mascotas',
+  description: 'Sistema de seguimiento para el servicio de estetica canina',
   generator: 'v0.app',
   icons: {
     icon: [

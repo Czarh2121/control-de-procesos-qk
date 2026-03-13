@@ -1,180 +1,101 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import { useTickets } from "@/hooks/use-tickets"
+import { useMascotas } from "@/hooks/use-mascotas"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import type { Ticket, TicketEstado } from "@/lib/tickets"
+import type { Mascota, MascotaEstado } from "@/lib/mascotas"
 import {
-  ArrowLeft,
   Search,
-  Printer,
-  Layers,
   CheckCircle2,
   Clock,
-  Package,
-  Timer,
+  Dog,
+  Scissors,
+  User,
+  Phone,
 } from "lucide-react"
 
-import type { TipoServicio } from "@/lib/tickets"
-
-const pasosAmbos: {
-  estado: TicketEstado
-  label: string
-  icon: React.ElementType
-}[] = [
-  { estado: "en_impresion", label: "Imprimiendo", icon: Printer },
-  { estado: "en_laminado", label: "Laminando", icon: Layers },
-  { estado: "terminado", label: "Listo", icon: CheckCircle2 },
-]
-
-const pasosSoloImpresion = [
-  { estado: "en_impresion" as TicketEstado, label: "Imprimiendo", icon: Printer },
-  { estado: "terminado" as TicketEstado, label: "Listo", icon: CheckCircle2 },
-]
-
-const pasosSoloLaminado = [
-  { estado: "en_laminado" as TicketEstado, label: "Laminando", icon: Layers },
-  { estado: "terminado" as TicketEstado, label: "Listo", icon: CheckCircle2 },
-]
-
-function getPasos(tipo: TipoServicio) {
-  if (tipo === "solo_impresion") return pasosSoloImpresion
-  if (tipo === "solo_laminado") return pasosSoloLaminado
-  return pasosAmbos
-}
-
-function estadoIndex(estado: TicketEstado, tipo: TipoServicio) {
-  const pasos = getPasos(tipo)
-  if (estado === "listo_para_laminado") return 0
-  return pasos.findIndex((p) => p.estado === estado)
-}
-
-function estimatedRemainingMinutes(ticket: Ticket): number {
-  const now = Date.now()
-  const tiempoImp = ticket.tiempoImpresion ?? 0
-  const tiempoLam = ticket.tiempoLaminado ?? 0
-  switch (ticket.estado) {
-    case "en_impresion": {
-      const start = new Date(ticket.inicioImpresion || ticket.creadoEn).getTime()
-      const elapsedMin = (now - start) / 60000
-      const remainingImpresion = Math.max(0, tiempoImp - elapsedMin)
-      // solo_impresion won't have laminado time
-      return Math.ceil(remainingImpresion + tiempoLam)
-    }
-    case "listo_para_laminado":
-      return Math.ceil(tiempoLam)
-    case "en_laminado": {
-      if (!ticket.inicioLaminado) return Math.ceil(tiempoLam)
-      const startLam = new Date(ticket.inicioLaminado).getTime()
-      const elapsedLam = (now - startLam) / 60000
-      return Math.ceil(Math.max(0, tiempoLam - elapsedLam))
-    }
-    case "terminado":
-      return 0
-    default:
-      return 0
-  }
-}
-
-function formatEstimatedTime(minutes: number): string {
-  if (minutes <= 0) return "Listo"
-  if (minutes < 60) return `~${minutes} min`
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `~${h}h ${m}min` : `~${h}h`
-}
-
-function estadoLabel(estado: TicketEstado): string {
+function estadoLabel(estado: MascotaEstado): string {
   switch (estado) {
-    case "en_impresion":
-      return "Imprimiendo"
-    case "listo_para_laminado":
-      return "Listo para laminar"
-    case "en_laminado":
-      return "Laminando"
-    case "terminado":
-      return "Listo para recoger"
+    case "en_proceso":
+      return "En proceso"
+    case "lista":
+      return "Lista para recoger"
     default:
       return estado
   }
 }
 
-function ConsultaTicketCard({ ticket }: { ticket: Ticket }) {
-  const tipo = ticket.tipoServicio ?? "ambos"
-  const pasos = getPasos(tipo)
-  const currentIdx = estadoIndex(ticket.estado, tipo)
-  const isTerminado = ticket.estado === "terminado"
-  const remaining = estimatedRemainingMinutes(ticket)
+function ConsultaMascotaCard({ mascota }: { mascota: Mascota }) {
+  const isLista = mascota.estado === "lista"
 
   return (
     <Card
       className={cn(
         "border-2 py-0 overflow-hidden",
-        isTerminado ? "border-emerald-400" : "border-border"
+        isLista ? "border-emerald-400" : "border-border"
       )}
     >
       {/* Status banner */}
       <div
         className={cn(
           "px-4 py-3 flex items-center justify-between",
-          isTerminado
+          isLista
             ? "bg-emerald-500 text-white"
-            : "bg-muted text-foreground"
+            : "bg-teal-100 text-teal-800"
         )}
       >
         <div className="flex items-center gap-2">
-          <Package className="size-5" />
-          <span className="font-bold text-lg font-mono">
-            #{ticket.ticketPOS}
+          <Dog className="size-5" />
+          <span className="font-bold text-lg">
+            {mascota.nombreMascota}
           </span>
         </div>
         <Badge
           className={cn(
             "text-sm border-none",
-            isTerminado
+            isLista
               ? "bg-white/20 text-white"
-              : "bg-background text-foreground"
+              : "bg-teal-200 text-teal-800"
           )}
         >
-          {estadoLabel(ticket.estado)}
+          {estadoLabel(mascota.estado)}
         </Badge>
       </div>
 
       <CardContent className="flex flex-col gap-4 p-4">
-        {/* Client name */}
-        {ticket.cliente && (
-          <p className="text-base text-muted-foreground">
-            Cliente:{" "}
-            <span className="font-semibold text-foreground">
-              {ticket.cliente}
-            </span>
-          </p>
-        )}
+        {/* Service */}
+        <div className="flex items-center gap-2">
+          <Scissors className="size-4 text-teal-600" />
+          <span className="font-semibold text-foreground">
+            {mascota.servicio}
+          </span>
+        </div>
 
-        {/* Estimated time remaining */}
-        {!isTerminado && (
-          <div className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3">
-            <Timer className="size-5 text-amber-600" />
-            <div>
-              <p className="text-sm font-semibold text-amber-800">
-                Tiempo estimado de entrega
-              </p>
-              <p className="text-lg font-bold text-amber-700">
-                {formatEstimatedTime(remaining)}
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Owner info */}
+        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <User className="size-3.5" />
+            {mascota.nombreDueno}
+          </span>
+          {mascota.telefono && (
+            <span className="flex items-center gap-1">
+              <Phone className="size-3.5" />
+              {mascota.telefono}
+            </span>
+          )}
+        </div>
 
         {/* Progress steps */}
         <div className="flex items-center gap-0">
-          {pasos.map((paso, idx) => {
+          {[
+            { estado: "en_proceso" as MascotaEstado, label: "En proceso", icon: Scissors },
+            { estado: "lista" as MascotaEstado, label: "Lista", icon: CheckCircle2 },
+          ].map((paso, idx) => {
             const Icon = paso.icon
+            const currentIdx = mascota.estado === "lista" ? 1 : 0
             const completed = idx <= currentIdx
             const isCurrent = idx === currentIdx
             return (
@@ -198,17 +119,17 @@ function ConsultaTicketCard({ ticket }: { ticket: Ticket }) {
                         !isCurrent &&
                         "bg-emerald-100 text-emerald-600",
                       isCurrent &&
-                        !isTerminado &&
-                        "bg-amber-100 text-amber-600 ring-2 ring-amber-400",
+                        !isLista &&
+                        "bg-teal-100 text-teal-600 ring-2 ring-teal-400",
                       isCurrent &&
-                        isTerminado &&
+                        isLista &&
                         "bg-emerald-500 text-white ring-2 ring-emerald-400",
                       !completed && "bg-muted text-muted-foreground"
                     )}
                   >
                     <Icon className="size-5" />
                   </div>
-                  {idx < pasos.length - 1 && (
+                  {idx < 1 && (
                     <div
                       className={cn(
                         "h-0.5 flex-1",
@@ -232,30 +153,29 @@ function ConsultaTicketCard({ ticket }: { ticket: Ticket }) {
           })}
         </div>
 
-        {/* Total time info */}
-        <div className="flex gap-4 text-sm text-muted-foreground">
-          {ticket.tiempoImpresion != null && (
-            <span className="flex items-center gap-1">
-              <Clock className="size-3.5" />
-              Impresion: {ticket.tiempoImpresion} min
-            </span>
-          )}
-          {ticket.tiempoLaminado != null && (
-            <span className="flex items-center gap-1">
-              <Clock className="size-3.5" />
-              Laminado: {ticket.tiempoLaminado} min
-            </span>
-          )}
-        </div>
+        {/* Status info */}
+        {!isLista && (
+          <div className="flex items-center gap-2 rounded-lg bg-teal-50 border border-teal-200 px-4 py-3">
+            <Clock className="size-5 text-teal-600" />
+            <div>
+              <p className="text-sm font-semibold text-teal-800">
+                Tu mascota esta siendo atendida
+              </p>
+              <p className="text-xs text-teal-600">
+                Te notificaremos cuando este lista
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Big message for finished */}
-        {isTerminado && (
+        {isLista && (
           <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-center">
             <p className="text-lg font-bold text-emerald-700">
-              Tu trabajo esta listo
+              Tu mascota esta lista
             </p>
             <p className="text-sm text-emerald-600">
-              Puedes pasar a recogerlo
+              Puedes pasar a recogerla
             </p>
           </div>
         )}
@@ -265,19 +185,20 @@ function ConsultaTicketCard({ ticket }: { ticket: Ticket }) {
 }
 
 export default function ConsultaPage() {
-  const { tickets: allTickets } = useTickets()
+  const { mascotas: allMascotas } = useMascotas()
   const [busqueda, setBusqueda] = useState("")
 
   const query = busqueda.trim().toLowerCase()
 
-  // Show all tickets, filtered by search if query exists
+  // Show all mascotas, filtered by search if query exists
   const resultados = query
-    ? allTickets.filter(
-        (t) =>
-          t.ticketPOS.toLowerCase().includes(query) ||
-          (t.cliente && t.cliente.toLowerCase().includes(query))
+    ? allMascotas.filter(
+        (m) =>
+          m.nombreMascota.toLowerCase().includes(query) ||
+          m.nombreDueno.toLowerCase().includes(query) ||
+          (m.telefono && m.telefono.includes(query))
       )
-    : allTickets
+    : allMascotas
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
@@ -285,7 +206,7 @@ export default function ConsultaPage() {
       <header className="sticky top-0 z-10 border-b bg-emerald-50 px-4 py-3">
         <div className="mx-auto flex max-w-2xl items-center gap-3">
           <h1 className="text-xl font-bold text-foreground">
-            Consultar Pedido
+            Consultar Mascota
           </h1>
         </div>
       </header>
@@ -298,13 +219,13 @@ export default function ConsultaPage() {
             htmlFor="busqueda"
             className="text-sm font-medium text-muted-foreground"
           >
-            Busca por numero de ticket o nombre del cliente
+            Busca por nombre de mascota, dueno o telefono
           </label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
             <Input
               id="busqueda"
-              placeholder="Ej: 1234 o Juan Perez"
+              placeholder="Ej: Firulais o Juan Perez"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               className="h-14 pl-11 text-lg"
@@ -317,12 +238,12 @@ export default function ConsultaPage() {
         {resultados.length > 0 ? (
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              {resultados.length} pedido{resultados.length !== 1 ? "s" : ""}
-              {query ? " encontrado" : ""}
+              {resultados.length} mascota{resultados.length !== 1 ? "s" : ""}
+              {query ? " encontrada" : ""}
               {resultados.length !== 1 && query ? "s" : ""}
             </p>
-            {resultados.map((ticket) => (
-              <ConsultaTicketCard key={ticket.id} ticket={ticket} />
+            {resultados.map((mascota) => (
+              <ConsultaMascotaCard key={mascota.id} mascota={mascota} />
             ))}
           </div>
         ) : (
@@ -333,12 +254,12 @@ export default function ConsultaPage() {
             <p className="text-foreground text-lg font-medium">
               {query
                 ? "No se encontraron resultados"
-                : "No hay pedidos registrados"}
+                : "No hay mascotas registradas"}
             </p>
             <p className="text-muted-foreground text-sm">
               {query
-                ? "Verifica el numero de ticket o nombre del cliente"
-                : "Los pedidos apareceran aqui cuando se registren"}
+                ? "Verifica el nombre de la mascota o el dueno"
+                : "Las mascotas apareceran aqui cuando se registren"}
             </p>
           </div>
         )}
